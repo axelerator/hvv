@@ -69,11 +69,11 @@ comds = [
     ]
 
 ls _ as = do
-  mapM (putStrLn . printTicket) (tickets as)
+  mapM (putStrLn . printTicket) (reverse $ tickets as)
   return as
 
 export filename state = do
-  mapM (putStrLn . exportTicket) (tickets state) 
+  mapM (putStrLn . exportTicket) (reverse $ tickets state) 
   return state
 
 
