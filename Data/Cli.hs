@@ -3,53 +3,58 @@ module Cli where
 
 import Data.List
 
-{-
-class Commando a where
-  description :: a -> String
---  action :: String -> a -> IO a
-
--}
+type Action a = (String -> a -> IO a)
 
 class ProgramState a where
   finished :: a -> Bool
 
-
-
-type Action a = (String -> a -> IO a)
-
-class Program p a where
-  initialState :: p a -> a
-  cmds :: p a -> [(String, Action a)]
-
+class ProgramState a => Program p a where
+  initialState :: p -> a
+  cmds :: p -> [(String, (Action a, String))]
 
 data Counter = Counter Int Bool
+
 instance ProgramState Counter where
   finished (Counter _ b) = b
 
 data ExPrg = ExPrg Counter
 
-
 instance Program ExPrg Counter where
-  initialState = undefined
-  cmds = undefined
-  --initialState = Counter 0 False
-  --cmds = [()]  
+  initialState (ExPrg c )= c
+  cmds e = [ ("q", (quit, "Quit")) ]
+
+quit :: Action Counter
+quit _ (Counter i _) = do
+  return $ Counter i True
+
+idle _ a = do
+  return a
+
+ep :: Program ExPrg Counter => a
+ep = ExPrg $ Counter 0 False
+
+--foo :: Program p a => p -> Bool
+foo prog = finished (initialState prog)
+
 
 {-
+main = do
+  let ep = ExPrg $ Counter 0 False
+  mainloop ep (initialState ep)
 
-mainloop :: a -> Commando -> String -> IO a
-mainloop state cmd params = do
-  newstate <- action params state
-  case (finished newstate) of
-    True -> return newstate
+mainloop :: Program p a => p -> a -> IO a
+mainloop p state = do
+  case (finished state) of
+    True -> return state
     False -> do
       input <- getLine
-      (ctrl, params)
-      let nextAct = lookup c commandos
-      case nextAct of
-        Nothing -> printHelp "" state
-        Just a -> mainloop newstate (fst a) nxtParams
--}
+      let (ctrl, params) = splitAtC ' ' input
+      let mbAction = lookup ctrl (cmds p)
+      case mbAction of
+        Nothing -> mainloop p state
+        Just action -> do
+          newstate <- (fst action) params state
+          mainloop p newstate 
 
 splitAtC c str = (h, rest t)
   where 
@@ -60,4 +65,5 @@ splitAtC c str = (h, rest t)
     rest "" = ""
     rest xs = tail xs
 
+-}
 
