@@ -1,0 +1,23 @@
+Name:                hvv 
+Version:             0.1
+Synopsis:            hvv ticket
+License:             AllRightsReserved
+License-file:        LICENSE
+Author:              Axel Tetzlaff
+Maintainer:          axel.tetzlaff@fortytools.com
+Category:            cmd line
+Build-type:          Simple
+
+Cabal-version:       >=1.2
+
+Executable hvv
+  Main-is:             Main.hs
+  
+  Build-depends:       base >= 4 && < 5,
+                       datetime >= 0.2 && < 0.3,
+                       binary >= 0.5 && < 0.6,
+                       directory >=1.0 && < 2.0
+
+  Extensions:          
+
+  -- Other-modules:       
