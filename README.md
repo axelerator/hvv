@@ -16,8 +16,8 @@ enter commands followed by <return>
 
 * q - Quit
 * m - <month> : set month
-* + - Roll day forward
-* - - Roll day back
+* '+'  Roll day forward
+* '-'   Roll day back
 * 1 - add new kurz ticket
 * 2 - add new nah ticket
 * 3 - add new gross ticket
