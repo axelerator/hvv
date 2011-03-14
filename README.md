@@ -13,7 +13,7 @@ Usage
 
 run executable
 enter commands followed by <return>
-- q - Quit
+-q - Quit
 - m - <month> : set month
 - + - Roll day forward
 - - - Roll day back
