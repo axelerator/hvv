@@ -4,6 +4,7 @@ module Main where
 import Data.Binary
 import Data.Binary.Get
 import Data.DateTime
+import Data.List
 import Data.Word
 import System.IO
 
@@ -26,7 +27,7 @@ instance Binary HvvTariff where
     return $ toEnum i
   
 instance Binary Ticket where
-  put (Ticket d t m) = put d >> put m  >> put t
+  put (Ticket d m t) = put d >> put m  >> put t
   get = do
     d <- get
     m <- get
@@ -61,6 +62,7 @@ comds = [
       ("2", (newT Kurz, "add new nah ticket")),
       ("3", (newT Gross, "add new gross ticket")),
       ("4", (newT Day9, "add new day ticket")),
+      ("rm", (rm, "<pos> remove ticket")),
       ("h", (printHelp, "print this help")),
       ("e", (export, "<filename> export to file")),
       ("ls", (ls, "show tickets")),
@@ -69,7 +71,8 @@ comds = [
     ]
 
 ls _ as = do
-  mapM (putStrLn . printTicket) (reverse $ tickets as)
+  let withPos = zip [1..] (reverse $ tickets as)
+  mapM (\(p,t) -> putStrLn $ "("++(show p) ++ ") " ++ (printTicket(t))) withPos
   return as
 
 export filename state = do
@@ -111,6 +114,11 @@ load filename (AppState _ f d m) = do
   ts <- decodeFile filename 
   putStrLn "load."
   return $ AppState ts f d m
+
+rm param (AppState ts f day month) = do
+  let idx = (read param)
+  let without = delete (ts !! ((length ts) - idx)) ts 
+  return $ AppState without f day month
 
 newT tariff _ (AppState ts f day month) = do
   putStrLn $ "Hinzugefügt: " ++ (show day) ++ "." ++ (show month) ++ " " ++ (show tariff)
